@@ -23,3 +23,9 @@ az network vnet subnet create \
   --vnet-name vnet-lab-avd \
   --address-prefixes 10.0.3.0/24
   
+ az network vnet subnet create \
+  --name subnet-lab-storage2 \
+  --resource-group rg-lab-avd \
+  --vnet-name vnet-lab-avd \
+  --address-prefixes 10.0.4.0/24
+  
