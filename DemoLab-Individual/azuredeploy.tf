@@ -263,7 +263,6 @@ resource "azurerm_virtual_machine_extension" "region1-dc01-basesetup" {
     }
   SETTINGS
 }
-
 # AVD Elements
 # Resource Group
 resource "azurerm_resource_group" "rg3" {

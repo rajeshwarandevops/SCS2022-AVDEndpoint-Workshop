@@ -1,3 +1,18 @@
+## Module Resources
+module "avd-hostpool-module" {
+  source = "./modules/avd-hostpool-module"
+  # Global Variables 
+  location = var.loc1
+  # Host Pools
+  pools = {
+    pool1 = {
+      name        = "attendee1"
+      vnet_cidr   = "10.11.0.0/16"
+      subnet_cidr = "10.11.1.0/24"
+    }
+  }
+}
+## Core Resources
 #Resource Groups
 resource "azurerm_resource_group" "rg1" {
   name     = var.azure-rg-1
@@ -29,67 +44,6 @@ resource "azurerm_subnet" "region1-vnet1-snet2" {
   virtual_network_name = azurerm_virtual_network.region1-vnet1-hub1.name
   address_prefixes     = [var.region1-vnet1-snet2-range]
 }
-resource "azurerm_subnet" "region1-vnet1-snet3" {
-  name                 = var.region1-vnet1-snet3-name
-  resource_group_name  = azurerm_resource_group.rg1.name
-  virtual_network_name = azurerm_virtual_network.region1-vnet1-hub1.name
-  address_prefixes     = [var.region1-vnet1-snet3-range]
-}
-#Spoke VNET and Subnets 
-resource "azurerm_virtual_network" "region1-vnet2-spoke1" {
-  name                = var.region1-vnet2-name
-  location            = var.loc1
-  resource_group_name = azurerm_resource_group.rg1.name
-  address_space       = [var.region1-vnet2-address-space]
-  dns_servers         = ["10.10.1.4", "168.63.129.16", "8.8.8.8"]
-}
-resource "azurerm_subnet" "region1-vnet2-snet1" {
-  name                 = var.region1-vnet2-snet1-name
-  resource_group_name  = azurerm_resource_group.rg1.name
-  virtual_network_name = azurerm_virtual_network.region1-vnet2-spoke1.name
-  address_prefixes     = [var.region1-vnet2-snet1-range]
-}
-resource "azurerm_subnet" "region1-vnet2-snet2" {
-  name                 = var.region1-vnet2-snet2-name
-  resource_group_name  = azurerm_resource_group.rg1.name
-  virtual_network_name = azurerm_virtual_network.region1-vnet2-spoke1.name
-  address_prefixes     = [var.region1-vnet2-snet2-range]
-}
-resource "azurerm_subnet" "region1-vnet2-snet3" {
-  name                 = var.region1-vnet2-snet3-name
-  resource_group_name  = azurerm_resource_group.rg1.name
-  virtual_network_name = azurerm_virtual_network.region1-vnet2-spoke1.name
-  address_prefixes     = [var.region1-vnet2-snet3-range]
-  delegation {
-    name = "delegation"
-    service_delegation {
-      name    = "Microsoft.Netapp/volumes"
-      actions = ["Microsoft.Network/networkinterfaces/*", "Microsoft.Network/virtualNetworks/subnets/join/action"]
-    }
-  }
-}
-#VNET Peering
-resource "azurerm_virtual_network_peering" "peer1" {
-  name                         = "region1-vnet1-to-region1-vnet2"
-  resource_group_name          = azurerm_resource_group.rg1.name
-  virtual_network_name         = azurerm_virtual_network.region1-vnet1-hub1.name
-  remote_virtual_network_id    = azurerm_virtual_network.region1-vnet2-spoke1.id
-  allow_virtual_network_access = true
-  allow_forwarded_traffic      = true
-}
-resource "azurerm_virtual_network_peering" "peer2" {
-  name                         = "region1-vnet2-to-region1-vnet1"
-  resource_group_name          = azurerm_resource_group.rg1.name
-  virtual_network_name         = azurerm_virtual_network.region1-vnet2-spoke1.name
-  remote_virtual_network_id    = azurerm_virtual_network.region1-vnet1-hub1.id
-  allow_virtual_network_access = true
-  allow_forwarded_traffic      = true
-}
-#RDP Access Rules for Lab
-#Get Client IP Address for NSG
-data "http" "clientip" {
-  url = "https://ipv4.icanhazip.com/"
-}
 #Lab NSG
 resource "azurerm_network_security_group" "region1-nsg" {
   name                = "region1-nsg"
@@ -104,7 +58,7 @@ resource "azurerm_network_security_group" "region1-nsg" {
     protocol                   = "*"
     source_port_range          = "*"
     destination_port_range     = "3389"
-    source_address_prefix      = "${chomp(data.http.clientip.body)}/32"
+    source_address_prefix      = "*"
     destination_address_prefix = "*"
   }
 }
@@ -119,14 +73,6 @@ resource "azurerm_subnet_network_security_group_association" "vnet1-snet2" {
 }
 resource "azurerm_subnet_network_security_group_association" "vnet1-snet3" {
   subnet_id                 = azurerm_subnet.region1-vnet1-snet3.id
-  network_security_group_id = azurerm_network_security_group.region1-nsg.id
-}
-resource "azurerm_subnet_network_security_group_association" "vnet2-snet1" {
-  subnet_id                 = azurerm_subnet.region1-vnet2-snet1.id
-  network_security_group_id = azurerm_network_security_group.region1-nsg.id
-}
-resource "azurerm_subnet_network_security_group_association" "vnet2-snet2" {
-  subnet_id                 = azurerm_subnet.region1-vnet2-snet2.id
   network_security_group_id = azurerm_network_security_group.region1-nsg.id
 }
 #Create KeyVault ID
@@ -152,7 +98,7 @@ resource "azurerm_key_vault" "kv1" {
     tenant_id = data.azurerm_client_config.current.tenant_id
     object_id = data.azurerm_client_config.current.object_id
 
-     key_permissions = [
+    key_permissions = [
       "Get",
     ]
 
@@ -262,80 +208,4 @@ resource "azurerm_virtual_machine_extension" "region1-dc01-basesetup" {
         ]
     }
   SETTINGS
-}
-
-# AVD Elements
-# Resource Group
-resource "azurerm_resource_group" "rg3" {
-  name     = var.azure-rg-3
-  location = var.loc1
-}
-# Host Pools
-resource "azurerm_virtual_desktop_host_pool" "hp1" {
-  location            = var.loc1
-  resource_group_name = azurerm_resource_group.rg3.name
-
-  name                     = "multi-user-pool"
-  friendly_name            = "multi-user-pool"
-  validate_environment     = false
-  start_vm_on_connect      = false
-  custom_rdp_properties    = "audiocapturemode:i:1;audiomode:i:0;"
-  description              = "1 to many Host Pool"
-  type                     = "Pooled"
-  maximum_sessions_allowed = 50
-  load_balancer_type       = "DepthFirst"
-}
-resource "azurerm_virtual_desktop_host_pool" "hp2" {
-  location            = var.loc1
-  resource_group_name = azurerm_resource_group.rg3.name
-
-  name                     = "single-user-pool"
-  friendly_name            = "single-user-pool"
-  validate_environment     = false
-  start_vm_on_connect      = false
-  custom_rdp_properties    = "audiocapturemode:i:1;audiomode:i:0;"
-  description              = "1 to 1 Host Pool"
-  type                     = "Personal"
-  maximum_sessions_allowed = 999999
-  load_balancer_type       = "Persistent"
-  personal_desktop_assignment_type = "Automatic"
-}
-# App Groups
-resource "azurerm_virtual_desktop_application_group" "appgroup1" {
-  name                = "app-group1-multi"
-  location            = var.loc1
-  resource_group_name = azurerm_resource_group.rg3.name
-
-  type          = "Desktop"
-  host_pool_id  = azurerm_virtual_desktop_host_pool.hp1.id
-  friendly_name = "Multi User Desktop"
-  description   = "Multi User Desktop Session"
-}
-resource "azurerm_virtual_desktop_application_group" "appgroup2" {
-  name                = "app-group2-single"
-  location            = var.loc1
-  resource_group_name = azurerm_resource_group.rg3.name
-
-  type          = "Desktop"
-  host_pool_id  = azurerm_virtual_desktop_host_pool.hp2.id
-  friendly_name = "Single User Desktop"
-  description   = "Single User Desktop Session"
-}
-# Workspaces 
-resource "azurerm_virtual_desktop_workspace" "demo-avd-workspace" {
-  name                = "demolab-workspace"
-  location            = var.loc1
-  resource_group_name = azurerm_resource_group.rg3.name
-
-  friendly_name = "demo-avd-workspace"
-  description   = "Demo AVD Workspace"
-}
-# App Group to Workspace Assignment
-resource "azurerm_virtual_desktop_workspace_application_group_association" "multi-user" {
-  workspace_id         = azurerm_virtual_desktop_workspace.demo-avd-workspace.id
-  application_group_id = azurerm_virtual_desktop_application_group.appgroup1.id
-}
-resource "azurerm_virtual_desktop_workspace_application_group_association" "single-user" {
-  workspace_id         = azurerm_virtual_desktop_workspace.demo-avd-workspace.id
-  application_group_id = azurerm_virtual_desktop_application_group.appgroup2.id
 }
