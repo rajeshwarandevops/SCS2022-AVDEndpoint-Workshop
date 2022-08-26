@@ -2,19 +2,11 @@
 resource "azurerm_resource_group" "rg1" {
   name     = var.azure-rg-1
   location = var.loc1
-  tags = {
-    Environment = var.environment_tag
-    Function    = "baselabv1-resourcegroups"
-  }
 }
 #Resource Groups
 resource "azurerm_resource_group" "rg2" {
   name     = var.azure-rg-2
   location = var.loc1
-  tags = {
-    Environment = var.environment_tag
-    Function    = "baselabv1-resourcegroups"
-  }
 }
 #VNETs and Subnets
 #Hub VNET and Subnets
@@ -24,10 +16,6 @@ resource "azurerm_virtual_network" "region1-vnet1-hub1" {
   resource_group_name = azurerm_resource_group.rg1.name
   address_space       = [var.region1-vnet1-address-space]
   dns_servers         = ["10.10.1.4", "168.63.129.16", "8.8.8.8"]
-  tags = {
-    Environment = var.environment_tag
-    Function    = "baselabv1-network"
-  }
 }
 resource "azurerm_subnet" "region1-vnet1-snet1" {
   name                 = var.region1-vnet1-snet1-name
@@ -54,10 +42,6 @@ resource "azurerm_virtual_network" "region1-vnet2-spoke1" {
   resource_group_name = azurerm_resource_group.rg1.name
   address_space       = [var.region1-vnet2-address-space]
   dns_servers         = ["10.10.1.4", "168.63.129.16", "8.8.8.8"]
-  tags = {
-    Environment = var.environment_tag
-    Function    = "baselabv1-network"
-  }
 }
 resource "azurerm_subnet" "region1-vnet2-snet1" {
   name                 = var.region1-vnet2-snet1-name
@@ -123,10 +107,6 @@ resource "azurerm_network_security_group" "region1-nsg" {
     source_address_prefix      = "${chomp(data.http.clientip.body)}/32"
     destination_address_prefix = "*"
   }
-  tags = {
-    Environment = var.environment_tag
-    Function    = "baselabv1-security"
-  }
 }
 #NSG Association to all Lab Subnets
 resource "azurerm_subnet_network_security_group_association" "vnet1-snet1" {
@@ -172,7 +152,7 @@ resource "azurerm_key_vault" "kv1" {
     tenant_id = data.azurerm_client_config.current.tenant_id
     object_id = data.azurerm_client_config.current.object_id
 
-    key_permissions = [
+     key_permissions = [
       "Get",
     ]
 
@@ -183,10 +163,6 @@ resource "azurerm_key_vault" "kv1" {
     storage_permissions = [
       "Get",
     ]
-  }
-  tags = {
-    Environment = var.environment_tag
-    Function    = "baselabv1-security"
   }
 }
 #Create KeyVault VM password
@@ -208,11 +184,6 @@ resource "azurerm_public_ip" "region1-dc01-pip" {
   location            = var.loc1
   allocation_method   = "Static"
   sku                 = "Standard"
-
-  tags = {
-    Environment = var.environment_tag
-    Function    = "baselabv1-activedirectory"
-  }
 }
 #Create NIC and associate the Public IP
 resource "azurerm_network_interface" "region1-dc01-nic" {
@@ -227,11 +198,6 @@ resource "azurerm_network_interface" "region1-dc01-nic" {
     private_ip_address_allocation = "Dynamic"
     public_ip_address_id          = azurerm_public_ip.region1-dc01-pip.id
   }
-
-  tags = {
-    Environment = var.environment_tag
-    Function    = "baselabv1-activedirectory"
-  }
 }
 #Create data disk for NTDS storage
 resource "azurerm_managed_disk" "region1-dc01-data" {
@@ -242,11 +208,6 @@ resource "azurerm_managed_disk" "region1-dc01-data" {
   create_option        = "Empty"
   disk_size_gb         = "20"
   max_shares           = "2"
-
-  tags = {
-    Environment = var.environment_tag
-    Function    = "baselabv1-activedirectory"
-  }
 }
 #Create Domain Controller VM
 resource "azurerm_windows_virtual_machine" "region1-dc01-vm" {
@@ -260,17 +221,10 @@ resource "azurerm_windows_virtual_machine" "region1-dc01-vm" {
   network_interface_ids = [
     azurerm_network_interface.region1-dc01-nic.id,
   ]
-
-  tags = {
-    Environment = var.environment_tag
-    Function    = "baselabv1-activedirectory"
-  }
-
   os_disk {
     caching              = "ReadWrite"
     storage_account_type = "StandardSSD_LRS"
   }
-
   source_image_reference {
     publisher = "MicrosoftWindowsServer"
     offer     = "WindowsServer"
@@ -304,8 +258,84 @@ resource "azurerm_virtual_machine_extension" "region1-dc01-basesetup" {
   settings = <<SETTINGS
     {
         "fileUris": [
-          "https://raw.githubusercontent.com/jakewalsh90/Terraform-Azure/main/Single-Region-Azure-BaseLab/PowerShell/baselab_DCSetup.ps1"
+          "https://raw.githubusercontent.com/jakewalsh90/Terraform-Azure/main/AVD-Demo-Lab/PowerShell/baselab_DCSetup.ps1"
         ]
     }
   SETTINGS
+}
+
+# AVD Elements
+# Resource Group
+resource "azurerm_resource_group" "rg3" {
+  name     = var.azure-rg-3
+  location = var.loc1
+}
+# Host Pools
+resource "azurerm_virtual_desktop_host_pool" "hp1" {
+  location            = var.loc1
+  resource_group_name = azurerm_resource_group.rg3.name
+
+  name                     = "multi-user-pool"
+  friendly_name            = "multi-user-pool"
+  validate_environment     = false
+  start_vm_on_connect      = false
+  custom_rdp_properties    = "audiocapturemode:i:1;audiomode:i:0;"
+  description              = "1 to many Host Pool"
+  type                     = "Pooled"
+  maximum_sessions_allowed = 50
+  load_balancer_type       = "DepthFirst"
+}
+resource "azurerm_virtual_desktop_host_pool" "hp2" {
+  location            = var.loc1
+  resource_group_name = azurerm_resource_group.rg3.name
+
+  name                     = "single-user-pool"
+  friendly_name            = "single-user-pool"
+  validate_environment     = false
+  start_vm_on_connect      = false
+  custom_rdp_properties    = "audiocapturemode:i:1;audiomode:i:0;"
+  description              = "1 to 1 Host Pool"
+  type                     = "Personal"
+  maximum_sessions_allowed = 999999
+  load_balancer_type       = "Persistent"
+  personal_desktop_assignment_type = "Automatic"
+}
+# App Groups
+resource "azurerm_virtual_desktop_application_group" "appgroup1" {
+  name                = "app-group1-multi"
+  location            = var.loc1
+  resource_group_name = azurerm_resource_group.rg3.name
+
+  type          = "Desktop"
+  host_pool_id  = azurerm_virtual_desktop_host_pool.hp1.id
+  friendly_name = "Multi User Desktop"
+  description   = "Multi User Desktop Session"
+}
+resource "azurerm_virtual_desktop_application_group" "appgroup2" {
+  name                = "app-group2-single"
+  location            = var.loc1
+  resource_group_name = azurerm_resource_group.rg3.name
+
+  type          = "Desktop"
+  host_pool_id  = azurerm_virtual_desktop_host_pool.hp2.id
+  friendly_name = "Single User Desktop"
+  description   = "Single User Desktop Session"
+}
+# Workspaces 
+resource "azurerm_virtual_desktop_workspace" "demo-avd-workspace" {
+  name                = "demolab-workspace"
+  location            = var.loc1
+  resource_group_name = azurerm_resource_group.rg3.name
+
+  friendly_name = "demo-avd-workspace"
+  description   = "Demo AVD Workspace"
+}
+# App Group to Workspace Assignment
+resource "azurerm_virtual_desktop_workspace_application_group_association" "multi-user" {
+  workspace_id         = azurerm_virtual_desktop_workspace.demo-avd-workspace.id
+  application_group_id = azurerm_virtual_desktop_application_group.appgroup1.id
+}
+resource "azurerm_virtual_desktop_workspace_application_group_association" "single-user" {
+  workspace_id         = azurerm_virtual_desktop_workspace.demo-avd-workspace.id
+  application_group_id = azurerm_virtual_desktop_application_group.appgroup2.id
 }
