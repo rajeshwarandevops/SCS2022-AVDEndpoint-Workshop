@@ -3,7 +3,6 @@ Set-ExecutionPolicy Bypass -Scope Process -Force
 #Choco install and Choco Apps
 iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
 choco install googlechrome -y
-choco install azure-ad-connect -y
 #Download Scripts to Set the rest of the Domain up when logged in
 New-Item -Path "c:\" -Name "BaselabSetup" -ItemType "directory" -Force
 Invoke-WebRequest -Uri "https://raw.githubusercontent.com/jakewalsh90/SCS2022-AVDEndpoint-Workshop/main/DemoLab-Individual/PowerShell/baselab_DomainSetup.ps1" -OutFile "C:\BaselabSetup\baselab_DomainSetup.ps1"
