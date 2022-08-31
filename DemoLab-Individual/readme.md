@@ -1,4 +1,4 @@
-# Single Region Azure Virtual Desktop Demo Lab
+# Single Region Azure Virtual Desktop Lab
 
 Based on the Single Region Baselab this Lab creates the required components to test Azure Virtual Desktop in a small environment. 
 
