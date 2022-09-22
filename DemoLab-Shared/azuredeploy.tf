@@ -18,6 +18,9 @@ module "avd-hostpool-module" {
   # Global Variables 
   location = "uk south"
   dns      = "10.10.10.1"
+  hub_vnetid = "/subscriptions/bcf086d6-59ae-4481-b2a1-eddf7d75eeff/resourceGroups/scsavdlab-infra/providers/Microsoft.Network/virtualNetworks/Region1-vnet1-hub"
+  hub_vnetname = "region1-vnet1-hub"
+  hub_rg = "scsavdlab-infra"
   # Lab Environments
   labs = {
     lab1 = {

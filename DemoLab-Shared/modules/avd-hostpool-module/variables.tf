@@ -6,6 +6,18 @@ variable "dns" {
   description = "dns servers for the lab vnet"
   default     = "10.10.10.1"
 }
+variable "hub_vnetid" {
+  description = "hub vnet id to peer into"
+  default     = "vnetid"
+}
+variable "hub_vnetname" {
+  description = "hub vnet name to peer into"
+  default     = "vnetid"
+}
+variable "hub_rg" {
+  description = "hub vnet name to peer into"
+  default     = "vnetid"
+}
 variable "labs" {
   description = "dns servers for the lab vnet"
   type        = map(any)

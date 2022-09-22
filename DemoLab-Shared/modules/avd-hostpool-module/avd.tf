@@ -21,6 +21,22 @@ resource "azurerm_subnet" "region1-vnet1-snet1" {
   virtual_network_name = azurerm_virtual_network.vn[each.key].name
   address_prefixes     = [each.value.subnet_cidr]
 }
+# VNET peering
+resource "azurerm_virtual_network_peering" "lab-to-hub" {
+  for_each                  = var.labs
+  name                      = "${each.value.name}-to-hub"
+  resource_group_name       = azurerm_resource_group.rg[each.key].name
+  virtual_network_name      = azurerm_virtual_network.vn[each.key].name
+  remote_virtual_network_id = var.hub_vnetid
+}
+
+resource "azurerm_virtual_network_peering" "hub-to-lab" {
+  for_each                  = var.labs
+  name                      = "hub-to-${each.value.name}"
+  resource_group_name       = var.hub_rg
+  virtual_network_name      = var.hub_vnetname
+  remote_virtual_network_id = azurerm_virtual_network.vn[each.key].id
+}
 # Host Pool
 resource "azurerm_virtual_desktop_host_pool" "hp" {
   for_each            = var.labs
@@ -39,15 +55,15 @@ resource "azurerm_virtual_desktop_host_pool" "hp" {
 }
 # App Groups
 resource "azurerm_virtual_desktop_application_group" "ag" {
-  for_each            = var.labs
-  name                = "ag-avd-lab-${each.value.name}"
-  location            = var.location
-  resource_group_name = azurerm_resource_group.rg[each.key].name
-  type                = "Desktop"
-  host_pool_id        = azurerm_virtual_desktop_host_pool.hp[each.key].id
-  friendly_name       = "ag-avd-lab-${each.value.name}"
-  description         = "Multi User Desktop Session"
-  default_desktop_display_name = "SCS Lab Test Desktop"
+  for_each                     = var.labs
+  name                         = "ag-avd-lab-${each.value.name}"
+  location                     = var.location
+  resource_group_name          = azurerm_resource_group.rg[each.key].name
+  type                         = "Desktop"
+  host_pool_id                 = azurerm_virtual_desktop_host_pool.hp[each.key].id
+  friendly_name                = "ag-avd-lab-${each.value.name}"
+  description                  = "Multi User Desktop Session"
+  default_desktop_display_name = "${each.value.name} - SCS Lab Test Desktop"
 }
 # Workspaces 
 resource "azurerm_virtual_desktop_workspace" "ws" {
