@@ -28,5 +28,15 @@ module "avd-hostpool-module" {
       vnet_cidr   = "10.11.0.0/16"
       subnet_cidr = "10.11.1.0/24"
     }
+        lab2 = {
+      name        = "lab2"
+      vnet_cidr   = "10.12.0.0/16"
+      subnet_cidr = "10.12.1.0/24"
+    }
+        lab3 = {
+      name        = "lab3"
+      vnet_cidr   = "10.13.0.0/16"
+      subnet_cidr = "10.13.1.0/24"
+    }
   }
 }
