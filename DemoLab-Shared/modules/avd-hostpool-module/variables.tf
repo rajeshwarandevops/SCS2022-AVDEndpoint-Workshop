@@ -1,12 +1,19 @@
-variable "name" {
-  description = "the name to be used for the host pool and other resources"
-  default     = "test1"
+variable "location" {
+  description = "default location to use"
+  default     = "uk south"
 }
-variable "vnet_cidr" {
-  description = "CIDR Range for VNETs"
-  default     = "10.20.0.0/16"
+variable "dns" {
+  description = "dns servers for the lab vnet"
+  default     = "10.10.10.1"
 }
-variable "subnet_cidr" {
-  description = "CIDR Range for Subnets"
-  default     = "10.20.1.0/24"
+variable "labs" {
+  description = "dns servers for the lab vnet"
+  type        = map(any)
+  default = {
+    lab1 = {
+      name        = "lab1"
+      vnet_cidr   = "10.11.0.0/16"
+      subnet_cidr = "10.11.1.0/24"
+    }
+  }
 }
