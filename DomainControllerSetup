@@ -12,5 +12,6 @@ New-ADOrganizationalUnit -Name "Computers" -Path $LabDCRoot -ProtectedFromAccide
 New-ADOrganizationalUnit -Name "ANF" -Path $LabDCRoot -ProtectedFromAccidentalDeletion $False -Description "Lab ANF Objects"
 Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
 choco install azure-ad-connect -y
-$wshell.Popup("Click OK and then Browse to Lab -> Users, and create a Demo User for your Lab",0,"Important")
+$wsh = New-Object -ComObject Wscript.Shell
+$wsh.Popup("Click OK and then Browse to Lab -> Users, and create a Demo User for your Lab")
 dsa.msc
