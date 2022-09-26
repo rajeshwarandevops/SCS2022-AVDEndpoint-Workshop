@@ -15,3 +15,4 @@ choco install azure-ad-connect -y
 $wsh = New-Object -ComObject Wscript.Shell
 $wsh.Popup("Click OK and then Browse to Lab -> Users, and create a Demo User for your Lab")
 dsa.msc
+exit
