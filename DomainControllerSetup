@@ -10,6 +10,6 @@ New-ADOrganizationalUnit -Name "Servers" -Path $LabDCRoot -ProtectedFromAccident
 New-ADOrganizationalUnit -Name "WVD" -Path $LabDCRoot -ProtectedFromAccidentalDeletion $False -Description "Lab WVD Session Hosts"
 New-ADOrganizationalUnit -Name "Computers" -Path $LabDCRoot -ProtectedFromAccidentalDeletion $False -Description "Lab Computers"
 New-ADOrganizationalUnit -Name "ANF" -Path $LabDCRoot -ProtectedFromAccidentalDeletion $False -Description "Lab ANF Objects"
-New-ADUser -Name "SCSLabUser" -Accountpassword (Read-Host -AsSecureString "SCS2022Passw0rd@@") -Enabled $true
+New-ADUser -Name "SCSLabUser" -Accountpassword (Read-Host -AsSecureString "SCS2022Passw0rd@@") -Enabled $true -Path "OU=Users,OU=LAB,DC=AD,DC=Lab"
 Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
 choco install azure-ad-connect
