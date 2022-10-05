@@ -333,3 +333,17 @@ resource "azurerm_virtual_desktop_workspace_application_group_association" "sing
   workspace_id         = azurerm_virtual_desktop_workspace.demo-avd-workspace.id
   application_group_id = azurerm_virtual_desktop_application_group.appgroup2.id
 }
+# Azure NetApp Files
+resource "azurerm_netapp_account" "region1-anf" {
+  name                = "anf-account"
+  resource_group_name = azurerm_resource_group.rg1.name
+  location            = var.loc1
+}
+resource "azurerm_netapp_pool" "region1-anf-pool1" {
+  name                = "pool1"
+  account_name        = azurerm_netapp_account.region1-anf.name
+  location            = var.loc1
+  resource_group_name = azurerm_resource_group.rg1.name
+  service_level       = "Standard"
+  size_in_tb          = 4
+}

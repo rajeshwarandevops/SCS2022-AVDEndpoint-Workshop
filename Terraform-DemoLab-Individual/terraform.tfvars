@@ -1,7 +1,7 @@
 azure-rg-1                  = "scsavdlab-infra"
 azure-rg-2                  = "scsavdlab-sec"
 azure-rg-3                  = "scsavdlab-avd"
-loc1                        = "uk south"
+loc1                        = "north europe"
 region1-vnet1-name          = "region1-vnet1-hub"
 region1-vnet2-name          = "region1-vnet2-spoke"
 region1-vnet1-address-space = "10.10.0.0/16"
