@@ -9,5 +9,6 @@ Repo for the 2022 South Coast Summit AVD and Endpoint Manager Workshop.
 
  -  Anthony Mashford - [@anthonymashford](https://twitter.com/anthonymashford)
 
+Lab AD OU:
 
-OU=ATL-AVD,OU=ATL-Workstations,OU=ATL,DC=azuretech,DC=lab
+  OU=ATL-AVD,OU=ATL-Workstations,OU=ATL,DC=azuretech,DC=lab
