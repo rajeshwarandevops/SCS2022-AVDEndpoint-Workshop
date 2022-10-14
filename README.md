@@ -9,6 +9,12 @@ Repo for the 2022 South Coast Summit AVD and Endpoint Manager Workshop.
 
  -  Anthony Mashford - [@anthonymashford](https://twitter.com/anthonymashford)
 
-Lab AD OU:
+Useful links for further reading/learning:
 
-  OU=ATL-AVD,OU=ATL-Workstations,OU=ATL,DC=azuretech,DC=lab
+  Terraform Azure Getting started guide - [https://jakewalsh.co.uk/category/terraform-getting-started/](https://jakewalsh.co.uk/category/terraform-getting-started/)
+
+  Terraform-Azure Repo - lots of sample code and labs you can deploy - [https://github.com/jakewalsh90/Terraform-Azure](https://github.com/jakewalsh90/Terraform-Azure)
+
+  Chocolatey - a great tool for deploying apps! - [https://chocolatey.org/](https://chocolatey.org/)
+
+
