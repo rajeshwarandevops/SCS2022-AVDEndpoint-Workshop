@@ -1,5 +1,7 @@
-# SCS2022-AVDEndpoint-Workshop
+# South Coast Summit 2022 - AVD and Endpoint Manager Workshop
 Repo for the 2022 South Coast Summit AVD and Endpoint Manager Workshop.
+
+[![Check Links](https://github.com/jakewalsh90/SCS2022-AVDEndpoint-Workshop/actions/workflows/links.yml/badge.svg)](https://github.com/jakewalsh90/SCS2022-AVDEndpoint-Workshop/actions/workflows/links.yml)
 
 ## Useful Links:
 
