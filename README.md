@@ -1,5 +1,5 @@
-# South Coast Summit 2022 - AVD and ~~Endpoint Manager~~ Intune Workshop
-Repo for the 2022 South Coast Summit AVD and Endpoint Manager Workshop.
+# South Coast Summit 2022 - AVD and Intune Workshop
+Repo for the 2022 South Coast Summit AVD and Intune Workshop.
 
 [![Check Links](https://github.com/jakewalsh90/SCS2022-AVDEndpoint-Workshop/actions/workflows/links.yml/badge.svg)](https://github.com/jakewalsh90/SCS2022-AVDEndpoint-Workshop/actions/workflows/links.yml)
 
@@ -18,5 +18,3 @@ Repo for the 2022 South Coast Summit AVD and Endpoint Manager Workshop.
    - Terraform Azure Getting started guide - [https://jakewalsh.co.uk/category/terraform-getting-started/](https://jakewalsh.co.uk/category/terraform-getting-started/)
    - Terraform-Azure Repo - lots of sample code and labs you can deploy - [https://github.com/jakewalsh90/Terraform-Azure](https://github.com/jakewalsh90/Terraform-Azure)
    - Chocolatey - a great tool for deploying apps! - [https://chocolatey.org/](https://chocolatey.org/)
-
-
